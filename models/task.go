@@ -1,7 +1,7 @@
 package models
 
 type Task struct {
-	ID          int
-	NAME        string
-	Task_status bool
+	Id         int    `db:"id"`
+	Task       string `db:"task"`
+	TaskStatus bool   `db:"taskstatus"`
 }

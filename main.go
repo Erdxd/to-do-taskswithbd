@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	functionwithdb "github.com/Erdxd/conv-IMT-bookmarks-massivestatic.git/pet-project-ToDoLIst/Functionwithdb"
 	"github.com/Erdxd/conv-IMT-bookmarks-massivestatic.git/pet-project-ToDoLIst/database"
 )
 
@@ -30,7 +31,7 @@ menu:
 		case "1":
 
 		case "2":
-
+			functionwithdb.GetAllTasks()
 		case "3":
 			fmt.Println("Which task you want to start?")
 			fmt.Println()

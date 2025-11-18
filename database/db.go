@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/Erdxd/conv-IMT-bookmarks-massivestatic.git/pet-project-ToDoLIst/models"
 	_ "github.com/lib/pq"
 )
 
@@ -25,7 +26,28 @@ func InitDb() (*sql.DB, error) {
 		fmt.Println("Failed to connect to the database")
 		return nil, err
 	}
+
 	log.Println("Succesfully connected to the database")
 	return db, nil
+
+}
+func CheckTask() ([]models.Task, error) {
+	rows, err := db.Query(`SELECT id, task, taskstatus FROM public.tasks`)
+
+	if err != nil {
+		log.Println("Can't SELECT data by your tables")
+		return nil, err
+	}
+	defer rows.Close()
+	var tasks []models.Task
+	for rows.Next() {
+		var t models.Task
+		err := rows.Scan(&t.Id, &t.Task, &t.TaskStatus)
+		if err != nil {
+			return nil, err
+		}
+		tasks = append(tasks, t)
+	}
+	return tasks, nil
 
 }

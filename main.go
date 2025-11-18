@@ -2,11 +2,17 @@ package main
 
 import (
 	"fmt"
+	"log"
 
-	"github.com/Erdxd/conv-IMT-bookmarks-massivestatic.git/pet-project-ToDoLIst/AddTask"
+	"github.com/Erdxd/conv-IMT-bookmarks-massivestatic.git/pet-project-ToDoLIst/database"
 )
 
 func main() {
+	_, err := database.InitDb()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	fmt.Println("___TO-DO LIST___")
 
 menu:
@@ -22,9 +28,9 @@ menu:
 		fmt.Scan(&Useranswer)
 		switch Useranswer {
 		case "1":
-			AddTask.Addtask()
+
 		case "2":
-			AddTask.CheckAllTask()
+
 		case "3":
 			fmt.Println("Which task you want to start?")
 			fmt.Println()

@@ -1,15 +1,17 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 
 	functionwithdb "github.com/Erdxd/conv-IMT-bookmarks-massivestatic.git/pet-project-ToDoLIst/Functionwithdb"
 	"github.com/Erdxd/conv-IMT-bookmarks-massivestatic.git/pet-project-ToDoLIst/database"
+	"github.com/Erdxd/conv-IMT-bookmarks-massivestatic.git/pet-project-ToDoLIst/models"
 )
 
 func main() {
-	_, err := database.InitDb()
+	db, err := database.InitDb()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -29,6 +31,7 @@ menu:
 		fmt.Scan(&Useranswer)
 		switch Useranswer {
 		case "1":
+			AddTask(db)
 
 		case "2":
 			functionwithdb.GetAllTasks()
@@ -43,6 +46,24 @@ menu:
 		case "6":
 			break menu
 		}
+	}
+
+}
+func AddTask(db *sql.DB) {
+	fmt.Println("Enter task id")
+	var idw int
+	fmt.Scan(&idw)
+	fmt.Println("Enter task name")
+	var taskw string
+	fmt.Scan(&taskw)
+	fmt.Println("Enter task status")
+	var taskStatusw bool
+	fmt.Scan(&taskStatusw)
+	task := models.Task{Id: idw, Task: taskw, TaskStatus: taskStatusw}
+	err := database.AddTask(db, task)
+	if err != nil {
+		log.Fatal()
+
 	}
 
 }

@@ -51,3 +51,11 @@ func CheckTask() ([]models.Task, error) {
 	return tasks, nil
 
 }
+func AddTask(db *sql.DB, task models.Task) error {
+	SqlStatement := (`INSERT INTO tasks (id, task, taskstatus) VALUES ($1,$2 ,$3)`)
+	_, err := db.Exec(SqlStatement, task.Id, task.Task, task.TaskStatus)
+	if err != nil {
+		return err
+	}
+	return nil
+}

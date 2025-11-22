@@ -17,13 +17,13 @@ func InitDb() (*sql.DB, error) {
 	var err error
 	db, err = sql.Open("postgres", PsqlInfo)
 	if err != nil {
-		fmt.Println("Failed to open with your data")
+		log.Println("Failed to open with your data")
 		return nil, err
 
 	}
 	err = db.Ping()
 	if err != nil {
-		fmt.Println("Failed to connect to the database")
+		log.Println("Failed to connect to the database")
 		return nil, err
 	}
 

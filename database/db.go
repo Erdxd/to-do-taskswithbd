@@ -2,7 +2,7 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
+
 	"log"
 
 	"github.com/Erdxd/conv-IMT-bookmarks-massivestatic.git/pet-project-ToDoLIst/models"

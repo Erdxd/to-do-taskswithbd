@@ -59,3 +59,19 @@ func AddTask(db *sql.DB, task models.Task) error {
 	}
 	return nil
 }
+func DeleteTask(db *sql.DB, Id int) error {
+	SqlStatement := (`DELETE FROM tasks WHERE id = $1`)
+	_, err := db.Exec(SqlStatement, Id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func ChangeStatus(db *sql.DB, Id int) error {
+	SqlStatement := (`UPDATE tasks SET taskstatus = true WHERE id = $1 `)
+	_, err := db.Exec(SqlStatement, Id)
+	if err != nil {
+		return err
+	}
+	return nil
+}

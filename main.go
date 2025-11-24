@@ -10,7 +10,7 @@ import (
 	"github.com/Erdxd/conv-IMT-bookmarks-massivestatic.git/pet-project-ToDoLIst/models"
 )
 
-func main() {
+func main1() {
 	db, err := database.InitDb()
 	if err != nil {
 		log.Fatal(err)
@@ -82,6 +82,7 @@ func DeleteTask(db *sql.DB) {
 func ChangeStatus(db *sql.DB) {
 	var IdForChange int
 	fmt.Println("Enter Id")
+
 	fmt.Scan(&IdForChange)
 
 	err := database.ChangeStatus(db, IdForChange)

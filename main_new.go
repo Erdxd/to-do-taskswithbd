@@ -2,14 +2,13 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"strconv"
 
-	"github.com/Erdxd/conv-IMT-bookmarks-massivestatic.git/pet-project-ToDoLIst/database"
-	"github.com/Erdxd/conv-IMT-bookmarks-massivestatic.git/pet-project-ToDoLIst/models"
+	"pet-project-ToDoLIst/database"
+	"pet-project-ToDoLIst/models"
 )
 
 var db *sql.DB
@@ -29,8 +28,11 @@ func main() {
 	http.HandleFunc("/changestatus", changeStatusHandler)
 
 	// Запуск веб-сервера
-	fmt.Println("Сервер запущен на http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Println("Server starting on :8080...")
+	err = http.ListenAndServe("0.0.0.0:8080", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // indexHandler отображает главную страницу со списком задач
@@ -50,7 +52,6 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, data)
 }
 
-// addTaskHandler обрабатывает добавление новой задачи
 func addTaskHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		// Получаем данные из формы

@@ -2,11 +2,10 @@ package database
 
 import (
 	"database/sql"
-
 	"log"
+	"pet-project-ToDoLIst/models"
 
-	"github.com/Erdxd/conv-IMT-bookmarks-massivestatic.git/pet-project-ToDoLIst/models"
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" // Драйвер PostgreSQL
 )
 
 var db *sql.DB

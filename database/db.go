@@ -12,7 +12,7 @@ var db *sql.DB
 
 func InitDb() (*sql.DB, error) {
 
-	PsqlInfo := "host=127.0.0.1 port=5432 user=postgres password=postgres dbname=postgres sslmode=disable"
+	PsqlInfo := "host=192.168.0.12 port=5432 user=postgres password=postgres dbname=postgres sslmode=disable"
 	var err error
 	db, err = sql.Open("postgres", PsqlInfo)
 	if err != nil {
@@ -31,10 +31,11 @@ func InitDb() (*sql.DB, error) {
 
 }
 func CheckTask() ([]models.Task, error) {
-	rows, err := db.Query(`SELECT id, task, taskstatus FROM public.tasks`)
+	rows, err := db.Query(`SELECT id, task, taskstatus FROM tasks`)
 
 	if err != nil {
 		log.Println("Can't SELECT data by your tables")
+		log.Println(err)
 		return nil, err
 	}
 	defer rows.Close()

@@ -31,7 +31,7 @@ func InitDb() (*sql.DB, error) {
 
 }
 func CheckTask() ([]models.Task, error) {
-	rows, err := db.Query(`SELECT id, task, taskstatus FROM tasks`)
+	rows, err := db.Query(`SELECT id, task, taskstatus, comment FROM tasks`)
 
 	if err != nil {
 		log.Println("Can't SELECT data by your tables")
@@ -42,7 +42,7 @@ func CheckTask() ([]models.Task, error) {
 	var tasks []models.Task
 	for rows.Next() {
 		var t models.Task
-		err := rows.Scan(&t.Id, &t.Task, &t.TaskStatus)
+		err := rows.Scan(&t.Id, &t.Task, &t.TaskStatus, &t.Comment)
 		if err != nil {
 			return nil, err
 		}
@@ -52,8 +52,8 @@ func CheckTask() ([]models.Task, error) {
 
 }
 func AddTask(db *sql.DB, task models.Task) error {
-	SqlStatement := (`INSERT INTO tasks (id, task, taskstatus) VALUES ($1,$2 ,$3)`)
-	_, err := db.Exec(SqlStatement, task.Id, task.Task, task.TaskStatus)
+	SqlStatement := (`INSERT INTO tasks (id, task, taskstatus, comment) VALUES ($1,$2 ,$3,$4)`)
+	_, err := db.Exec(SqlStatement, task.Id, task.Task, task.TaskStatus, task.Comment)
 	if err != nil {
 		return err
 	}
@@ -74,4 +74,14 @@ func ChangeStatus(db *sql.DB, Id int) error {
 		return err
 	}
 	return nil
+}
+func FindTaskByName(db *sql.DB, task string) (*models.Task, error) {
+	SqlStatement := (`SELECT id, task, taskstatus,comment FROM tasks WHERE task=$1`)
+	var tasks1 models.Task
+	err := db.QueryRow(SqlStatement, task).Scan(&tasks1.Id, &tasks1.Task, &tasks1.TaskStatus, &tasks1.Comment)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return &tasks1, nil
 }

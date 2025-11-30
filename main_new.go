@@ -26,6 +26,7 @@ func main() {
 	http.HandleFunc("/add", addTaskHandler)
 	http.HandleFunc("/delete", deleteTaskHandler)
 	http.HandleFunc("/changestatus", changeStatusHandler)
+	http.HandleFunc("/findbyname", FindTaskByNameHandler)
 
 	// Запуск веб-сервера
 	log.Println("Server starting on :8080...")
@@ -35,7 +36,6 @@ func main() {
 	}
 }
 
-// indexHandler отображает главную страницу со списком задач
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	tasks, err := database.CheckTask()
 	if err != nil {
@@ -62,13 +62,15 @@ func addTaskHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		taskName := r.FormValue("task")
-		taskStatus := r.FormValue("status") == "on" // чекбокс возвращает "on" если отмечен
+		taskStatus := r.FormValue("status") == "on"
+		taskcomment := r.FormValue("comment")
 
 		// Создаем новую задачу
 		task := models.Task{
 			Id:         id,
 			Task:       taskName,
 			TaskStatus: taskStatus,
+			Comment:    taskcomment,
 		}
 
 		// Добавляем задачу в базу данных
@@ -86,14 +88,13 @@ func addTaskHandler(w http.ResponseWriter, r *http.Request) {
 // deleteTaskHandler обрабатывает удаление задачи
 func deleteTaskHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		// Получаем ID задачи из формы
+
 		id, err := strconv.Atoi(r.FormValue("id"))
 		if err != nil {
 			http.Error(w, "Неверный ID", http.StatusBadRequest)
 			return
 		}
 
-		// Удаляем задачу из базы данных
 		err = database.DeleteTask(db, id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -105,7 +106,6 @@ func deleteTaskHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// changeStatusHandler обрабатывает изменение статуса задачи
 func changeStatusHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		// Получаем ID задачи из формы
@@ -125,4 +125,23 @@ func changeStatusHandler(w http.ResponseWriter, r *http.Request) {
 		// Перенаправляем на главную страницу
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
+}
+func FindTaskByNameHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		task := r.FormValue("findtask")
+
+		data1, err := database.FindTaskByName(db, task)
+		if err != nil {
+			http.Error(w, "Неверный ID", http.StatusBadRequest)
+			return
+		}
+		SliceTask := []models.Task{*data1}
+		data := struct {
+			Tasks []models.Task
+		}{Tasks: SliceTask}
+		tmpl.Execute(w, data)
+
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

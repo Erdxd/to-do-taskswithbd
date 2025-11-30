@@ -24,6 +24,15 @@
             color: #333;
             text-align: center;
         }
+         .coment {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
         .task {
             border: 1px solid #ddd;
             padding: 10px;
@@ -49,7 +58,7 @@
             border-radius: 4px;
         }
         button {
-            padding: 8px 15px;
+            padding: 10px 15px;
             background-color: #4CAF50;
             color: white;
             border: none;
@@ -83,6 +92,28 @@
 <body>
     <div class="container">
         <h1>ToDo List</h1>
+         <form action="/findbyname" method="get" class="form-group">
+            <h3>Найти задачу</h3>
+            <div>
+                 <label for="task">Введи название задачи:</label>
+                <input type="text"  name="findtask" required>
+            </div>
+             </div>
+            <button type="submit">Найти</button>
+        </form>
+        {{range .Tasks}}
+         <div class="task {{if .TaskStatus}}completed{{end}}">
+            <div>
+                <span>ID: {{.Id}}</span>
+                <span>Задача: {{.Task}}</span>
+                 <span>Коментарий: {{.Comment}}</span>
+                <span>Статус: {{if .TaskStatus}}Выполнено{{else}}Не выполнено{{end}}</span>
+                
+            </div>
+    
+             </div>
+             {{end}}
+        
 
         <form action="/add" method="post" class="form-group">
             <h3>Добавить новую задачу</h3>
@@ -93,6 +124,9 @@
             <div>
                 <label for="task">Задача:</label>
                 <input type="text" id="task" name="task" required>
+            </div>
+             <label for="comment">Коментарий:</label>
+                <input type="text" id="comment" name="comment" required>
             </div>
             <div>
                 <label for="status">Статус (выполнено):</label>
@@ -106,9 +140,11 @@
         <div class="task {{if .TaskStatus}}completed{{end}}">
             <div>
                 <span>ID: {{.Id}}</span>
-                <span class="task-name">{{.Task}}</span>
+                <span>Задача: {{.Task}}</span>
+                 <span>Коментарий: {{.Comment}}</span>
                 <span>Статус: {{if .TaskStatus}}Выполнено{{else}}Не выполнено{{end}}</span>
             </div>
+
             <div>
                 <form action="/changestatus" method="post" style="display: inline;">
                     <input type="hidden" name="id" value="{{.Id}}">

@@ -96,14 +96,20 @@
             <h3>Найти задачу</h3>
             <div>
                  <label for="task">Введи название задачи:</label>
-                <input type="text"  name="findtask" required>
+                 <input type="text"  name="findtask" required>
             </div>
-             </div>
             <button type="submit">Найти</button>
         </form>
-        {{range .Tasks}}
-         <div class="task {{if .TaskStatus}}completed{{end}}">
-            <div>
+        
+        
+        
+            <!-- ИЗМЕНЕНО: Используем SearchTask для результатов поиска -->
+            {{if .SearchTask}}
+            {{range .SearchTask}}
+             <h3>Результаты поиска:</h3>
+            
+                <div class="task {{if .TaskStatus}}completed{{end}}">
+                <div>
                 <span>ID: {{.Id}}</span>
                 <span>Задача: {{.Task}}</span>
                  <span>Коментарий: {{.Comment}}</span>
@@ -112,7 +118,10 @@
             </div>
     
              </div>
+             
              {{end}}
+            {{end}}
+             
         
 
         <form action="/add" method="post" class="form-group">
@@ -136,7 +145,8 @@
         </form>
 
         <h3>Список задач</h3>
-        {{range .Tasks}}
+        <!-- ИЗМЕНЕНО: Используем TasksAll для полного списка задач -->
+        {{range .TasksAll}}
         <div class="task {{if .TaskStatus}}completed{{end}}">
             <div>
                 <span>ID: {{.Id}}</span>

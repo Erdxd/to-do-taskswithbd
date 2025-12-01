@@ -43,10 +43,13 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// ИЗМЕНЕНО: Используем ту же структуру данных, что и в FindTaskByNameHandler
 	data := struct {
-		Tasks []models.Task
+		TasksAll   []models.Task
+		SearchTask []models.Task
 	}{
-		Tasks: tasks,
+		TasksAll:   tasks,
+		SearchTask: nil, // Пустой список для результатов поиска
 	}
 
 	tmpl.Execute(w, data)
@@ -109,6 +112,7 @@ func deleteTaskHandler(w http.ResponseWriter, r *http.Request) {
 func changeStatusHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		// Получаем ID задачи из формы
+
 		id, err := strconv.Atoi(r.FormValue("id"))
 		if err != nil {
 			http.Error(w, "Неверный ID", http.StatusBadRequest)
@@ -128,17 +132,25 @@ func changeStatusHandler(w http.ResponseWriter, r *http.Request) {
 }
 func FindTaskByNameHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		task := r.FormValue("findtask")
 
-		data1, err := database.FindTaskByName(db, task)
+		TaskFind := r.FormValue("findtask")
+
+		data1, err := database.FindTaskByName(db, TaskFind)
 		if err != nil {
-			http.Error(w, "Неверный ID", http.StatusBadRequest)
 			return
 		}
+		tasksAll, err := database.CheckTask()
+
+		if err != nil {
+			return
+		}
+
 		SliceTask := []models.Task{*data1}
 		data := struct {
-			Tasks []models.Task
-		}{Tasks: SliceTask}
+			TasksAll   []models.Task
+			SearchTask []models.Task
+		}{SearchTask: SliceTask,
+			TasksAll: tasksAll}
 		tmpl.Execute(w, data)
 
 	}

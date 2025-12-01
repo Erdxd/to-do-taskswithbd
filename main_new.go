@@ -43,13 +43,12 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// ИЗМЕНЕНО: Используем ту же структуру данных, что и в FindTaskByNameHandler
 	data := struct {
 		TasksAll   []models.Task
 		SearchTask []models.Task
 	}{
 		TasksAll:   tasks,
-		SearchTask: nil, // Пустой список для результатов поиска
+		SearchTask: nil,
 	}
 
 	tmpl.Execute(w, data)
@@ -137,6 +136,7 @@ func FindTaskByNameHandler(w http.ResponseWriter, r *http.Request) {
 
 		data1, err := database.FindTaskByName(db, TaskFind)
 		if err != nil {
+			http.Error(w, "Задача не найдена", http.StatusBadRequest)
 			return
 		}
 		tasksAll, err := database.CheckTask()

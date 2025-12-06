@@ -105,8 +105,7 @@
         
             <!-- ИЗМЕНЕНО: Используем SearchTask для результатов поиска -->
             {{if .SearchTask}}
-            {{range .SearchTask}}
-             <h3>Результаты поиска:</h3>
+            {{range .SearchTask}}             <h3>Результаты поиска:</h3>
             
                 <div class="task {{if .TaskStatus}}completed{{end}}">
                 <div>
@@ -156,6 +155,14 @@
             </div>
 
             <div>
+                <form action="/starttask" method="post" style="display: inline;">
+                    <input type="hidden" name="taskid" value="{{.Id}}">
+                      <div>
+                <label for="id">Время на задачу:</label>
+                <input type="number" min="1"id="time" name="time" required>
+            </div>
+                    <button type="submit" class="status-btn">Начать выполнение задачи</button>
+                </form>
                 <form action="/changestatus" method="post" style="display: inline;">
                     <input type="hidden" name="id" value="{{.Id}}">
                     <button type="submit" class="status-btn">Изменить статус</button>

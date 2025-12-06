@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"pet-project-ToDoLIst/models"
+	"time"
 
 	_ "github.com/lib/pq" // Драйвер PostgreSQL
 )
@@ -84,4 +85,10 @@ func FindTaskByName(db *sql.DB, task string) (*models.Task, error) {
 		return nil, err
 	}
 	return &tasks1, nil
+}
+func TimeForTask(n int) error {
+	for i := 0; i < n; i++ {
+		time.Sleep(1000000000)
+	}
+	return nil
 }

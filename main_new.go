@@ -27,6 +27,7 @@ func main() {
 	http.HandleFunc("/delete", deleteTaskHandler)
 	http.HandleFunc("/changestatus", changeStatusHandler)
 	http.HandleFunc("/findbyname", FindTaskByNameHandler)
+	http.HandleFunc("/starttask", TimeToTask)
 
 	// Запуск веб-сервера
 	log.Println("Server starting on :8080...")
@@ -56,7 +57,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 func addTaskHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		// Получаем данные из формы
+
 		id, err := strconv.Atoi(r.FormValue("id"))
 		if err != nil {
 			http.Error(w, "Неверный ID", http.StatusBadRequest)
@@ -67,7 +68,6 @@ func addTaskHandler(w http.ResponseWriter, r *http.Request) {
 		taskStatus := r.FormValue("status") == "on"
 		taskcomment := r.FormValue("comment")
 
-		// Создаем новую задачу
 		task := models.Task{
 			Id:         id,
 			Task:       taskName,
@@ -75,19 +75,16 @@ func addTaskHandler(w http.ResponseWriter, r *http.Request) {
 			Comment:    taskcomment,
 		}
 
-		// Добавляем задачу в базу данных
 		err = database.AddTask(db, task)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		// Перенаправляем на главную страницу
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }
 
-// deleteTaskHandler обрабатывает удаление задачи
 func deleteTaskHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 
@@ -103,14 +100,12 @@ func deleteTaskHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Перенаправляем на главную страницу
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }
 
 func changeStatusHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		// Получаем ID задачи из формы
 
 		id, err := strconv.Atoi(r.FormValue("id"))
 		if err != nil {
@@ -118,14 +113,12 @@ func changeStatusHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Изменяем статус задачи в базе данных
 		err = database.ChangeStatus(db, id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		// Перенаправляем на главную страницу
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }
@@ -156,4 +149,25 @@ func FindTaskByNameHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+func TimeToTask(w http.ResponseWriter, r *http.Request) {
+	Time, err := strconv.Atoi(r.FormValue("time"))
+	taskid, err := strconv.Atoi(r.FormValue("taskid"))
+
+	if err != nil {
+		http.Error(w, "Нет значения времени", http.StatusBadRequest)
+		return
+	}
+	err = database.TimeForTask(Time)
+	if err != nil {
+		return
+	}
+	err = database.ChangeStatus(db, taskid)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+
 }

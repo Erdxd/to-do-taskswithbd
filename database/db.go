@@ -86,9 +86,14 @@ func FindTaskByName(db *sql.DB, task string) (*models.Task, error) {
 	}
 	return &tasks1, nil
 }
-func TimeForTask(n int) error {
-	for i := 0; i < n; i++ {
-		time.Sleep(1000000000)
-	}
+func TimeForTask(n int, taskID int, done chan models.TaskResult) error {
+	go func() {
+		for i := 0; i < n; i++ {
+			time.Sleep(1 * time.Second)
+
+		}
+		done <- models.TaskResult{TaskD: taskID, Error: nil}
+
+	}()
 	return nil
 }

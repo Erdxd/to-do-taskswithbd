@@ -151,6 +151,8 @@ func FindTaskByNameHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 func TimeToTask(w http.ResponseWriter, r *http.Request) {
+	done := make(chan models.TaskResult)
+
 	Time, err := strconv.Atoi(r.FormValue("time"))
 	taskid, err := strconv.Atoi(r.FormValue("taskid"))
 
@@ -158,14 +160,16 @@ func TimeToTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Нет значения времени", http.StatusBadRequest)
 		return
 	}
-	err = database.TimeForTask(Time)
-	if err != nil {
-		return
-	}
-	err = database.ChangeStatus(db, taskid)
-	if err != nil {
+	go database.TimeForTask(Time, taskid, done)
+	result := <-done
+	if result.Error != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+	err = database.ChangeStatus(db, result.TaskD)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+
 	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)

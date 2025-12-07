@@ -6,3 +6,7 @@ type Task struct {
 	TaskStatus bool   `db:"taskstatus"`
 	Comment    string `db:"comment"`
 }
+type TaskResult struct {
+	TaskD int
+	Error error
+}

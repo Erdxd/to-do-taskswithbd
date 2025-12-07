@@ -2,11 +2,18 @@ package database_test
 
 import (
 	"pet-project-ToDoLIst/database"
+	"pet-project-ToDoLIst/models"
 	"testing"
 )
 
 func TestTimeForTask(t *testing.T) {
-	n := 10
-	database.TimeForTask(n)
+	data := make(chan models.TaskResult)
+
+	n := 2
+	database.TimeForTask(n, 1, data)
+	result := <-data
+	if result.Error != nil {
+		return
+	}
 
 }

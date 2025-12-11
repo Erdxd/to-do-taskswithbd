@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Регистрация</h1>
+        <form action="/register" method="post" class="form-group">
+            <div class="form-group">
+                <label for="username">Имя пользователя:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="Email" name="Email" required>
+            </div>
+            <div class="form-group">
+                <label for="passworduser">Пароль:</label>
+                <input type="password" id="passworduser" name="passworduser" required>
+            </div>
+            <button type="submit">Зарегистрироваться</button>
+        </form>
+        <p>Уже есть аккаунт? <a href="/login">Войдите</a></p>
+    </div>
+</body>
+</html>
+        

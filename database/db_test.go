@@ -9,7 +9,7 @@ import (
 func TestTimeForTask(t *testing.T) {
 	data := make(chan models.TaskResult)
 
-	n := 2
+	n := 4
 	database.TimeForTask(n, 1, data)
 	result := <-data
 	if result.Error != nil {

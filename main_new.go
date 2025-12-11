@@ -7,12 +7,15 @@ import (
 	"net/http"
 	"strconv"
 
+	"pet-project-ToDoLIst/account"
 	"pet-project-ToDoLIst/database"
 	"pet-project-ToDoLIst/models"
 )
 
 var db *sql.DB
 var tmpl = template.Must(template.ParseFiles("templates/index.html"))
+var tmplRegister = template.Must(template.ParseFiles("templates/register.html"))
+var tmplLogin = template.Must(template.ParseFiles("templates/login.html"))
 
 func main() {
 	var err error
@@ -27,7 +30,9 @@ func main() {
 	http.HandleFunc("/delete", deleteTaskHandler)
 	http.HandleFunc("/changestatus", changeStatusHandler)
 	http.HandleFunc("/findbyname", FindTaskByNameHandler)
-	http.HandleFunc("/starttask", TimeToTask)
+	http.HandleFunc("/starttask", TimeToTaskHandler)
+	http.HandleFunc("/register", RegisterPageHandler)
+	http.HandleFunc("/login", LoginPageHandler)
 
 	// Запуск веб-сервера
 	log.Println("Server starting on :8080...")
@@ -38,6 +43,7 @@ func main() {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+
 	tasks, err := database.CheckTask()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -150,7 +156,7 @@ func FindTaskByNameHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
-func TimeToTask(w http.ResponseWriter, r *http.Request) {
+func TimeToTaskHandler(w http.ResponseWriter, r *http.Request) {
 	done := make(chan models.TaskResult)
 
 	Time, err := strconv.Atoi(r.FormValue("time"))
@@ -174,4 +180,68 @@ func TimeToTask(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 
+}
+func CreateAcoountHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		NameAccount := r.FormValue("username")
+		Email := r.FormValue("Email")
+		Passworduser := r.FormValue("passworduser")
+		User := models.User{
+			Username: NameAccount,
+			Email:    Email,
+			Password: Passworduser,
+		}
+		err := account.CreateAccount(db, User)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+	}
+}
+func RegisterPageHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		NameAccount := r.FormValue("username")
+		Email := r.FormValue("Email")
+		Passworduser := r.FormValue("passworduser")
+		User := models.User{
+			Username: NameAccount,
+			Email:    Email,
+			Password: Passworduser,
+		}
+		err := account.CreateAccount(db, User)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+	}
+	tmplRegister.Execute(w, nil)
+
+}
+func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		NameAccount := r.FormValue("username")
+		Passwordfromuser := r.FormValue("passworduser")
+		passwordfromdb, err := account.LoginAccount(db, NameAccount)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if passwordfromdb != Passwordfromuser {
+			http.Error(w, "password is incorrect", http.StatusInternalServerError)
+		} else if passwordfromdb == Passwordfromuser {
+			iduser, err := account.GetIdUser(db, NameAccount)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			http.SetCookie(w, &http.Cookie{
+				Name:  "Id_user",
+				Value: strconv.Itoa(iduser),
+				Path:  "/",
+			})
+		}
+	}
+	tmplLogin.Execute(w, nil)
 }

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Вход</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Вход</h1>
+        <form action="/login" method="post" class="form-group">
+            <div class="form-group">
+                <label for="username">Имя пользователя:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="passworduser">Пароль:</label>
+                <input type="password" id="passworduser" name="passworduser" required>
+            </div>
+            <button type="submit">Войти</button>
+        </form>
+        <p>У вас еще нет аккаунта? <a href="/register">Зарегистрируйтесь</a></p>
+    </div>
+</body>
+</html>
+        

@@ -43,8 +43,21 @@ func main() {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("iduser")
+	if err != nil {
+		http.Error(w, "Не смогли извлечь куки", http.StatusBadRequest)
+	}
+	iduser, err := strconv.Atoi(cookie.Value)
+	if err != nil {
 
-	tasks, err := database.CheckTask()
+	}
+
+	if iduser == 0 {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+
+	}
+
+	tasks, err := database.CheckTask(iduser)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -130,6 +143,19 @@ func changeStatusHandler(w http.ResponseWriter, r *http.Request) {
 }
 func FindTaskByNameHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
+		cookie, err := r.Cookie("userID")
+		if err != nil {
+			http.Error(w, "Не смогли извлечь куки", http.StatusBadRequest)
+		}
+		iduser, err := strconv.Atoi(cookie.Value)
+		if err != nil {
+
+		}
+
+		if iduser == 0 {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+
+		}
 
 		TaskFind := r.FormValue("findtask")
 
@@ -138,7 +164,7 @@ func FindTaskByNameHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Задача не найдена", http.StatusBadRequest)
 			return
 		}
-		tasksAll, err := database.CheckTask()
+		tasksAll, err := database.CheckTask(iduser)
 
 		if err != nil {
 			return
@@ -241,7 +267,13 @@ func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 				Value: strconv.Itoa(iduser),
 				Path:  "/",
 			})
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		}
 	}
 	tmplLogin.Execute(w, nil)
+
+}
+func CheckIdT() {
+
 }

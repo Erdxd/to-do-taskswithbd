@@ -31,8 +31,8 @@ func InitDb() (*sql.DB, error) {
 	return db, nil
 
 }
-func CheckTask() ([]models.Task, error) {
-	rows, err := db.Query(`SELECT id, task, taskstatus, comment FROM tasks`)
+func CheckTask(userid int) ([]models.Task, error) {
+	rows, err := db.Query(`SELECT id, user_id, task, taskstatus, comment FROM tasks WHERE user_id = $1`, userid)
 
 	if err != nil {
 		log.Println("Can't SELECT data by your tables")
@@ -43,7 +43,7 @@ func CheckTask() ([]models.Task, error) {
 	var tasks []models.Task
 	for rows.Next() {
 		var t models.Task
-		err := rows.Scan(&t.Id, &t.Task, &t.TaskStatus, &t.Comment)
+		err := rows.Scan(&t.Id, &t.IdUser, &t.Task, &t.TaskStatus, &t.Comment)
 		if err != nil {
 			return nil, err
 		}

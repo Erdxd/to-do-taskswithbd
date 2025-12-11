@@ -34,7 +34,6 @@ func main() {
 	http.HandleFunc("/register", RegisterPageHandler)
 	http.HandleFunc("/login", LoginPageHandler)
 
-	// Запуск веб-сервера
 	log.Println("Server starting on :8080...")
 	err = http.ListenAndServe("0.0.0.0:8080", nil)
 	if err != nil {
@@ -54,7 +53,6 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 	if iduser == 0 {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
-
 	}
 
 	tasks, err := database.CheckTask(iduser)
@@ -256,6 +254,7 @@ func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		if passwordfromdb != Passwordfromuser {
 			http.Error(w, "password is incorrect", http.StatusInternalServerError)
+			return
 		} else if passwordfromdb == Passwordfromuser {
 			iduser, err := account.GetIdUser(db, NameAccount)
 			if err != nil {
@@ -263,7 +262,7 @@ func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			http.SetCookie(w, &http.Cookie{
-				Name:  "Id_user",
+				Name:  "iduser",
 				Value: strconv.Itoa(iduser),
 				Path:  "/",
 			})

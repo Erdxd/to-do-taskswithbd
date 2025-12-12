@@ -232,6 +232,7 @@ func TimeToTaskHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("iduser")
 	if err != nil {
 		http.Error(w, "Не смогли извлечь куки", http.StatusBadRequest)
+		return
 	}
 	iduser, err := strconv.Atoi(cookie.Value)
 	if err != nil {
@@ -243,6 +244,10 @@ func TimeToTaskHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	Time, err := strconv.Atoi(r.FormValue("time"))
+	if err != nil {
+		http.Error(w, "Нет значения времени", http.StatusBadRequest)
+		return
+	}
 	taskid, err := strconv.Atoi(r.FormValue("taskid"))
 
 	if err != nil {
@@ -252,7 +257,7 @@ func TimeToTaskHandler(w http.ResponseWriter, r *http.Request) {
 	go database.TimeForTask(Time, taskid, done)
 	result := <-done
 	if result.Error != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Произошла ошибка", http.StatusInternalServerError)
 		return
 	}
 	err = database.ChangeStatus(db, result.TaskD, iduser)

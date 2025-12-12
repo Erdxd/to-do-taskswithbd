@@ -76,10 +76,10 @@ func ChangeStatus(db *sql.DB, Id int, iduser int) error {
 	}
 	return nil
 }
-func FindTaskByName(db *sql.DB, task string) (*models.Task, error) {
-	SqlStatement := (`SELECT id, task, taskstatus,comment FROM tasks WHEREtask=$1`)
+func FindTaskByName(db *sql.DB, task string, iduser int) (*models.Task, error) {
+	SqlStatement := (`SELECT id, task, taskstatus,comment FROM tasks WHERE task=$1 AND user_id = $2 `)
 	var tasks1 models.Task
-	err := db.QueryRow(SqlStatement, task).Scan(&tasks1.Id, &tasks1.Task, &tasks1.TaskStatus, &tasks1.Comment)
+	err := db.QueryRow(SqlStatement, task, iduser).Scan(&tasks1.Id, &tasks1.Task, &tasks1.TaskStatus, &tasks1.Comment)
 	if err != nil {
 		log.Println(err)
 		return nil, err

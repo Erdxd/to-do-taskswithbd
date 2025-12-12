@@ -178,31 +178,41 @@ func changeStatusHandler(w http.ResponseWriter, r *http.Request) {
 }
 func FindTaskByNameHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		cookie, err := r.Cookie("userID")
+		cookie, err := r.Cookie("iduser")
 		if err != nil {
 			http.Error(w, "Не смогли извлечь куки", http.StatusBadRequest)
+			return
 		}
 		iduser, err := strconv.Atoi(cookie.Value)
 		if err != nil {
+			http.Error(w, "Не смогли извлечь куки", http.StatusBadRequest)
+			return
 
 		}
 
 		if iduser == 0 {
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
-
 		}
-
 		TaskFind := r.FormValue("findtask")
 
-		data1, err := database.FindTaskByName(db, TaskFind)
+		data1, err := database.FindTaskByName(db, TaskFind, iduser)
 		if err != nil {
 			http.Error(w, "Задача не найдена", http.StatusBadRequest)
 			return
 		}
 		tasksAll, err := database.CheckTask(iduser)
+		if tasksAll == nil {
+			http.Error(w, "Задача не найдена", http.StatusBadRequest)
+			return
+		}
 
 		if err != nil {
 			return
+		}
+		if data1 == nil {
+			http.Error(w, "Задача не найдена", http.StatusBadRequest)
+			return
+
 		}
 
 		SliceTask := []models.Task{*data1}
@@ -215,7 +225,7 @@ func FindTaskByNameHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/main", http.StatusSeeOther)
 }
 func TimeToTaskHandler(w http.ResponseWriter, r *http.Request) {
 	done := make(chan models.TaskResult)

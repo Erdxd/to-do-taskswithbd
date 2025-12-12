@@ -52,32 +52,32 @@ func CheckTask(iduser int) ([]models.Task, error) {
 	return tasks, nil
 
 }
-func AddTask(db *sql.DB, task models.Task) error {
-	SqlStatement := (`INSERT INTO tasks (id, task, taskstatus, comment) VALUES ($1,$2 ,$3,$4)`)
-	_, err := db.Exec(SqlStatement, task.Id, task.Task, task.TaskStatus, task.Comment)
+func AddTask(db *sql.DB, task models.Task, iduser int) error {
+	SqlStatement := (`INSERT INTO tasks (id, task, taskstatus, comment, user_id)  VALUES ($1,$2 ,$3,$4,$5) `)
+	_, err := db.Exec(SqlStatement, task.Id, task.Task, task.TaskStatus, task.Comment, iduser)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func DeleteTask(db *sql.DB, Id int) error {
-	SqlStatement := (`DELETE FROM tasks WHERE id = $1`)
-	_, err := db.Exec(SqlStatement, Id)
+func DeleteTask(db *sql.DB, Id int, iduser int) error {
+	SqlStatement := (`DELETE FROM tasks WHERE id = $1 AND user_id = $2`)
+	_, err := db.Exec(SqlStatement, Id, iduser)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func ChangeStatus(db *sql.DB, Id int) error {
-	SqlStatement := (`UPDATE tasks SET taskstatus = true WHERE id = $1 `)
-	_, err := db.Exec(SqlStatement, Id)
+func ChangeStatus(db *sql.DB, Id int, iduser int) error {
+	SqlStatement := (`UPDATE tasks SET taskstatus = true WHERE id = $1 AND user_id = $2 `)
+	_, err := db.Exec(SqlStatement, Id, iduser)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 func FindTaskByName(db *sql.DB, task string) (*models.Task, error) {
-	SqlStatement := (`SELECT id, task, taskstatus,comment FROM tasks WHERE task=$1`)
+	SqlStatement := (`SELECT id, task, taskstatus,comment FROM tasks WHEREtask=$1`)
 	var tasks1 models.Task
 	err := db.QueryRow(SqlStatement, task).Scan(&tasks1.Id, &tasks1.Task, &tasks1.TaskStatus, &tasks1.Comment)
 	if err != nil {

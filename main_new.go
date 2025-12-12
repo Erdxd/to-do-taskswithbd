@@ -25,7 +25,8 @@ func main() {
 	}
 
 	// Обработчики маршрутов
-	http.HandleFunc("/", indexHandler)
+	http.HandleFunc("/", RegisterPageHandler)
+	http.HandleFunc("/main", indexHandler)
 	http.HandleFunc("/add", addTaskHandler)
 	http.HandleFunc("/delete", deleteTaskHandler)
 	http.HandleFunc("/changestatus", changeStatusHandler)
@@ -74,7 +75,18 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 func addTaskHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
+		cookie, err := r.Cookie("iduser")
+		if err != nil {
+			http.Error(w, "Не смогли извлечь куки", http.StatusBadRequest)
+		}
+		iduser, err := strconv.Atoi(cookie.Value)
+		if err != nil {
 
+		}
+
+		if iduser == 0 {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+		}
 		id, err := strconv.Atoi(r.FormValue("id"))
 		if err != nil {
 			http.Error(w, "Неверный ID", http.StatusBadRequest)
@@ -92,18 +104,31 @@ func addTaskHandler(w http.ResponseWriter, r *http.Request) {
 			Comment:    taskcomment,
 		}
 
-		err = database.AddTask(db, task)
+		err = database.AddTask(db, task, iduser)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/main", http.StatusSeeOther)
 	}
 }
 
 func deleteTaskHandler(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method == "POST" {
+		cookie, err := r.Cookie("iduser")
+		if err != nil {
+			http.Error(w, "Не смогли извлечь куки", http.StatusBadRequest)
+		}
+		iduser, err := strconv.Atoi(cookie.Value)
+		if err != nil {
+
+		}
+
+		if iduser == 0 {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+		}
 
 		id, err := strconv.Atoi(r.FormValue("id"))
 		if err != nil {
@@ -111,18 +136,30 @@ func deleteTaskHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = database.DeleteTask(db, id)
+		err = database.DeleteTask(db, id, iduser)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/main", http.StatusSeeOther)
 	}
 }
 
 func changeStatusHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
+		cookie, err := r.Cookie("iduser")
+		if err != nil {
+			http.Error(w, "Не смогли извлечь куки", http.StatusBadRequest)
+		}
+		iduser, err := strconv.Atoi(cookie.Value)
+		if err != nil {
+
+		}
+
+		if iduser == 0 {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+		}
 
 		id, err := strconv.Atoi(r.FormValue("id"))
 		if err != nil {
@@ -130,13 +167,13 @@ func changeStatusHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = database.ChangeStatus(db, id)
+		err = database.ChangeStatus(db, id, iduser)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/main", http.StatusSeeOther)
 	}
 }
 func FindTaskByNameHandler(w http.ResponseWriter, r *http.Request) {
@@ -182,6 +219,18 @@ func FindTaskByNameHandler(w http.ResponseWriter, r *http.Request) {
 }
 func TimeToTaskHandler(w http.ResponseWriter, r *http.Request) {
 	done := make(chan models.TaskResult)
+	cookie, err := r.Cookie("iduser")
+	if err != nil {
+		http.Error(w, "Не смогли извлечь куки", http.StatusBadRequest)
+	}
+	iduser, err := strconv.Atoi(cookie.Value)
+	if err != nil {
+
+	}
+
+	if iduser == 0 {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+	}
 
 	Time, err := strconv.Atoi(r.FormValue("time"))
 	taskid, err := strconv.Atoi(r.FormValue("taskid"))
@@ -196,13 +245,13 @@ func TimeToTaskHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = database.ChangeStatus(db, result.TaskD)
+	err = database.ChangeStatus(db, result.TaskD, iduser)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/main", http.StatusSeeOther)
 
 }
 func CreateAcoountHandler(w http.ResponseWriter, r *http.Request) {
@@ -266,13 +315,10 @@ func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 				Value: strconv.Itoa(iduser),
 				Path:  "/",
 			})
-			http.Redirect(w, r, "/", http.StatusSeeOther)
+			http.Redirect(w, r, "/main", http.StatusSeeOther)
 
 		}
 	}
 	tmplLogin.Execute(w, nil)
-
-}
-func CheckIdT() {
 
 }
